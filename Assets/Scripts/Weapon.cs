@@ -6,7 +6,7 @@ public class Weapon : MonoBehaviour
     private const int DISTANCE = 100;
 
     public float Damage;
-    public float FireRate;
+    //public float FireRate;
     public ParticleSystem ShootParticle;
     public AudioClip ShootSound;
 
