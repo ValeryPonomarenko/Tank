@@ -1,26 +1,29 @@
-﻿using UnityEngine;
-using Managers;
+﻿using Managers;
+using UnityEngine;
 
 namespace Character
 {
-	[RequireComponent(typeof(Rigidbody))]
-	public class EnemyMovement : MonoBehaviour 
-	{
-		public float Speed;
+    [RequireComponent(typeof (Rigidbody))]
+    public class EnemyMovement : MonoBehaviour
+    {
+        public float Speed;
 
-		private GameObject playerObject;
-		private Rigidbody rigidbody;
+        private GameObject playerObject;
+        private Rigidbody enemyRigidbody;
 
-		void Start () 
-		{
-			playerObject = GameManager.GetInstance ().GetPlayerObject ();
-			rigidbody = GetComponent<Rigidbody> ();
-		}
+        private void Start()
+        {
+            playerObject = GameManager.GetInstance().GetPlayerObject();
+            enemyRigidbody = GetComponent<Rigidbody>();
+        }
 
-		private void Update()
-		{
-			transform.LookAt (playerObject.transform);
-			rigidbody.MovePosition(transform.position + transform.forward * Speed * Time.deltaTime);
-		}
-	}
+        private void Update()
+        {
+            if (playerObject.activeInHierarchy)
+            {
+                transform.LookAt(playerObject.transform);
+                enemyRigidbody.MovePosition(transform.position + transform.forward*Speed*Time.deltaTime);
+            }
+        }
+    }
 }

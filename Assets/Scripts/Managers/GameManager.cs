@@ -1,70 +1,99 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Managers
 {
-	public class GameManager : MonoBehaviour 
-	{
-		#region Singleton
-		private static GameManager instance;
+    public class GameManager : MonoBehaviour
+    {
+        #region Singleton
 
-		public static GameManager GetInstance()
-		{
-			return instance;
-		}
-		#endregion
+        private static GameManager instance;
 
-		[SerializeField] private GameObject[] EnemiesPrefab;
-		[SerializeField] private int MaxEnemies;
-		[SerializeField] private float SpawnTime;
-		private int aliveEnemies;
-		private GameObject playerObject;
+        public static GameManager GetInstance()
+        {
+            return instance;
+        }
 
-		public void Dead(GameObject gameChar)
-		{
-			if (gameChar.tag.Equals ("Enemy")) {
-				aliveEnemies--;
-				Destroy(gameChar);
-			} else {
-				GameOver();
-			}
-		}
+        #endregion
 
-		public GameObject GetPlayerObject()
-		{
-			return playerObject;
-		}
+        [SerializeField] private GameObject[] enemiesPrefab;
+        [SerializeField] private GameObject explosionParticlePrefab;
+        [SerializeField] private AudioClip explosionSound;
+        [SerializeField] private int maxEnemies;
+        [SerializeField] private float spawnTime;
+        [SerializeField] private Vector2 spawnArea;
+        private int aliveEnemies;
+        private GameObject playerObject;
+        private IEnumerator spawnEnumerator;
 
-		private void GameOver()
-		{
-			Debug.Log("GameOver");
-		}
+        #region Public methods
 
-		private void Awake()
-		{
-			instance = this;
+        /// <summary>
+        /// Вызывается, когда объект мертв
+        /// </summary>
+        /// <param name="deadGameObject">объект, который мертв</param>
+        public void Dead(GameObject deadGameObject)
+        {
+            Destroy(Instantiate(explosionParticlePrefab, deadGameObject.transform.position, Quaternion.identity), 5f);
+            AudioSource.PlayClipAtPoint(explosionSound, deadGameObject.transform.position);
 
-			if(EnemiesPrefab.Length > 0)
-				StartCoroutine (SpawnEnemy (SpawnTime));
+            if (deadGameObject.tag.Equals("Enemy"))
+            {
+                aliveEnemies--;
+                Destroy(deadGameObject);
+            }
+            else
+            {
+                deadGameObject.SetActive(false);
+                GameOver();
+            }
+        }
 
-			playerObject = GameObject.FindGameObjectWithTag ("Player");
-		}
+        public GameObject GetPlayerObject()
+        {
+            return playerObject;
+        }
 
-		private IEnumerator SpawnEnemy(float delay)
-		{
-			while (true) 
-			{
-				yield return new WaitForSeconds (delay);
-				if (aliveEnemies < MaxEnemies)
-					Spawn (EnemiesPrefab [Random.Range (0, EnemiesPrefab.Length)]);
-			}
-		}
+        #endregion
 
-		private void Spawn(GameObject enemy)
-		{
-			Instantiate (enemy, Vector3.zero, Quaternion.identity);
+        private void GameOver()
+        {
+            StopCoroutine(spawnEnumerator);
+        }
 
-			aliveEnemies++;
-		}
-	}
+        private void Awake()
+        {
+            instance = this;
+            spawnEnumerator = SpawnEnemy(spawnTime);
+
+            if (enemiesPrefab.Length > 0)
+            {
+                StartCoroutine(spawnEnumerator);
+            }
+
+
+            playerObject = GameObject.FindGameObjectWithTag("Player");
+        }
+
+        private IEnumerator SpawnEnemy(float delay)
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(delay);
+                if (aliveEnemies < maxEnemies)
+                    Spawn(enemiesPrefab[Random.Range(0, enemiesPrefab.Length)]);
+            }
+        }
+
+        private void Spawn(GameObject enemy)
+        {
+            Vector3 position = new Vector3(
+                Random.Range(-spawnArea.x, spawnArea.x),
+                0f,
+                Random.Range(-spawnArea.y, spawnArea.y));
+
+            Instantiate(enemy, position, Quaternion.identity);
+            aliveEnemies++;
+        }
+    }
 }

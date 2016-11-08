@@ -1,24 +1,24 @@
-﻿using UnityEngine;
-using Interfaces;
+﻿using Interfaces;
 using Managers;
+using UnityEngine;
 
 namespace Character
 {
-	public class EnemyAttack : MonoBehaviour
-	{
-		public float Damage;
+    public class EnemyAttack : MonoBehaviour
+    {
+        public float Damage;
 
-		private void OnTriggerEnter(Collider triggeredCollider)
-		{
-			if (triggeredCollider.tag.Equals ("Player")) 
-			{
-				IDamageable target = triggeredCollider.gameObject.GetComponent<IDamageable> ();
-				if (target != null) 
-				{
-					target.GetDamage (Damage);
-					GameManager.GetInstance ().Dead (gameObject);
-				}
-			}
-		}
-	}
+        private void OnTriggerEnter(Collider triggeredCollider)
+        {
+            if (triggeredCollider.tag.Equals("Player"))
+            {
+                IDamageable target = triggeredCollider.gameObject.GetComponent<IDamageable>();
+                if (target != null)
+                {
+                    target.GetDamage(Damage);
+                    GameManager.GetInstance().Dead(gameObject);
+                }
+            }
+        }
+    }
 }

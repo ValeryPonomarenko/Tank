@@ -2,26 +2,26 @@
 
 namespace Character
 {
-	[RequireComponent(typeof (Rigidbody))]
-	public class PlayerMovement: MonoBehaviour
-	{
-		public float MovementSpeed;
-		public float TurnSpeed;
+    [RequireComponent(typeof (Rigidbody))]
+    public class PlayerMovement : MonoBehaviour
+    {
+        public float MovementSpeed;
+        public float TurnSpeed;
 
-		private Rigidbody rigidbody;
+        private Rigidbody playerRigidbody;
 
-		private void Awake()
-		{
-			rigidbody = GetComponent<Rigidbody> ();
-		}
+        private void Awake()
+        {
+            playerRigidbody = GetComponent<Rigidbody>();
+        }
 
-		private void Update()
-		{
-			var motionVector = transform.forward * Input.GetAxis ("Vertical") * MovementSpeed * Time.deltaTime;
-			rigidbody.MovePosition(transform.position + motionVector);
+        private void Update()
+        {
+            var motionVector = transform.forward*Input.GetAxis("Vertical")*MovementSpeed*Time.deltaTime;
+            playerRigidbody.MovePosition(transform.position + motionVector);
 
-			var turnAngel = TurnSpeed * Input.GetAxis ("Horizontal") * TurnSpeed * Time.deltaTime;
-			transform.Rotate(0f, turnAngel, 0f);
-		}
-	}
+            var turnAngle = TurnSpeed*Input.GetAxis("Horizontal")*TurnSpeed*Time.deltaTime;
+            transform.Rotate(0f, turnAngle, 0f);
+        }
+    }
 }

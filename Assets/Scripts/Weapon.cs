@@ -1,29 +1,36 @@
-﻿using UnityEngine;
-using Interfaces;
+﻿using Interfaces;
+using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-	public float Damage;
-	public float FireRate;
+    private const int DISTANCE = 100;
 
-	public void Shoot()
-	{
-		RaycastHit hit;
-		if (Physics.Raycast (new Ray(transform.position, transform.forward), out hit, 100)) 
-		{
-			IDamageable targer = hit.collider.GetComponent<IDamageable> ();
-			if (targer != null)
-				targer.GetDamage (Damage);
-		}
-	}
+    public float Damage;
+    public float FireRate;
+    public ParticleSystem ShootParticle;
+    public AudioClip ShootSound;
 
-	public void Activate()
-	{
-		gameObject.SetActive (true);
-	}
+    public void Shoot()
+    {
+        ShootParticle.Play();
+        AudioSource.PlayClipAtPoint(ShootSound, transform.position);
 
-	public void Deactivate()
-	{
-		gameObject.SetActive (false);
-	}
+        RaycastHit hit;
+        if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, DISTANCE))
+        {
+            IDamageable target = hit.collider.GetComponent<IDamageable>();
+            if (target != null)
+                target.GetDamage(Damage);
+        }
+    }
+
+    public void Activate()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
 }
